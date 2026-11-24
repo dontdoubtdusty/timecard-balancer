@@ -1,4 +1,10 @@
-<!doctype html><html><head><meta charset=utf-8><title>Timecard Balancer</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf-8><title>Timecard Balancer</title>
+<meta name="theme-color" content="#eef1f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11181d" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Timecard"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -101,7 +107,7 @@ details.settings summary{cursor:pointer;font-weight:600}
 <div class="wrap">
   <header>
     <div>
-      <h1>Timecard Balancer<span class="ver">0.2.0</span></h1>
+      <h1>Timecard Balancer<span class="ver">0.3.0</span></h1>
       <div class="sub" id="periodSub">Minutes over or under, and how to land on target</div>
     </div>
     <label class="btn" for="pdfIn">Load Paycom PDF<input type="file" id="pdfIn" accept="application/pdf,.pdf" hidden></label>
@@ -364,6 +370,9 @@ $("pdfIn").addEventListener("change",async e=>{
 });
 
 render();
+
+// Register the offline helper (sw.js) when served over https, so the app can be installed and opens offline
+if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 
 </body></html>

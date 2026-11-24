@@ -9,8 +9,12 @@ Time Sheet PDF. First built as a claude.ai artifact (https://claude.ai/artifact/
 2026-11-24.
 
 ## Run
-Open `index.html` in a browser. No build step, no server, no packages. Data is saved in the browser's localStorage under
-the key `timecard-balancer-v1`, so it stays per browser and per file location.
+Live at https://dontdoubtdusty.github.io/timecard-balancer/ (GitHub Pages from `main`, root), installable as a PWA
+(progressive web app: a web page the phone installs like an app) via `manifest.webmanifest` and `sw.js`, same pattern as
+the Big apps. Locally, open `index.html` in a browser (the service worker only registers over https). No build step, no
+packages. Data is saved in the browser's localStorage under the key `timecard-balancer-v1`, per device and browser.
+
+When any file listed in `sw.js` changes, bump `VERSION` in `sw.js` too, or installed copies keep serving old icons.
 
 ## Version
 `<span class="ver">` in the `h1` of `index.html`. Rules in `claude/versioning.md`.

@@ -6,14 +6,17 @@ makes up the difference, by clock-out time or by a shorter or longer lunch.
 
 ## Install
 
-1. On the repo page, click **Code**, then **Download ZIP**.
-2. Right-click the zip, choose **Extract All...**, then **Extract**.
-3. Open the extracted folder and double-click `index.html`. It opens in your browser.
+1. Open https://dontdoubtdusty.github.io/timecard-balancer/ in Chrome (Android) or Safari (iPhone).
+2. Android: tap **Install app** if it appears, or the menu, then **Add to Home screen**, then **Install**.
+   iPhone: tap **Share**, then **Add to Home Screen**, then **Add**.
+3. Open **Timecard** from your home screen. It works offline after the first open.
 
-Updates: download the zip again and replace the old folder. Your data stays as long as the new `index.html` is in the
-same place and opened in the same browser.
+On a computer, open the same address and click the install icon at the right of the address bar, or just bookmark it.
 
-Uninstall: delete the folder. To remove saved data too, clear the site data for the page in your browser.
+Updates: automatic. The app loads the newest version whenever it opens with a connection; your punches are kept.
+
+Uninstall: remove the app from your home screen, which also removes its saved punches. Each device keeps its own data;
+nothing is shared between your phone and computer.
 
 ## Usage
 
@@ -25,7 +28,8 @@ week tabs to switch weeks, and **Planning defaults** to set your usual start, lu
 
 ## Known limits
 
-- Data lives in one browser on one computer. Another browser, or the file moved to another folder, starts empty.
-- Load Paycom PDF needs internet (it fetches the PDF reader), and only reads Paycom Web Time Sheet exports.
+- Data lives in one browser on one device, with no sync or backup. Another device or browser starts empty.
+- Load Paycom PDF needs internet the first time (it fetches a 1 MB PDF reader, then keeps it), and only reads Paycom
+  Web Time Sheet exports.
 - Up to four punches a day (in, lunch out, lunch in, out), Monday to Friday only.
 - Days in the past with no punches count as even, on purpose, so a missing day does not skew the plan.
