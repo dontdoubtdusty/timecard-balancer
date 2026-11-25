@@ -107,7 +107,7 @@ details.settings summary{cursor:pointer;font-weight:600}
 <div class="wrap">
   <header>
     <div>
-      <h1>Timecard Balancer<span class="ver">0.3.0</span></h1>
+      <h1>Timecard Balancer<span class="ver">0.3.1</span></h1>
       <div class="sub" id="periodSub">Minutes over or under, and how to land on target</div>
     </div>
     <label class="btn" for="pdfIn">Load Paycom PDF<input type="file" id="pdfIn" accept="application/pdf,.pdf" hidden></label>
@@ -170,24 +170,28 @@ function compute(ws){
     const D=W.days[date]||(W.days[date]={in:null,lout:null,lin:null,out:null,pto:0});
     const p={in:toMin(D.in),lout:toMin(D.lout),lin:toMin(D.lin),out:toMin(D.out)};
     const pto=D.pto||0, when=date<TODAY?"past":date===TODAY?"today":"future";
-    // No lunch: lunch punches are ignored and the usual lunch length counts as worked time
-    const nolunch=!!D.nolunch, bonus=nolunch?st.lunch:0;
+    // No lunch: lunch punches are ignored and the day counts straight from clock-in to clock-out.
+    // If the clock-out landed in a lunch field (a 2-punch day), move it to Out first.
+    const nolunch=!!D.nolunch;
+    if(nolunch&&!D.out&&(D.lin||D.lout)){
+      const k=D.lin?"lin":"lout";D.out=D[k];D[k]=null;p.out=toMin(D.out);
+    }
     if(nolunch){p.lout=null;p.lin=null}
     const any=[p.in,p.lout,p.lin,p.out].some(x=>x!=null);
-    const r={date,D,p,pto,when,daily,nolunch,bonus};
+    const r={date,D,p,pto,when,daily,nolunch};
     if(when==="past"&&!any&&!pto){
       r.worked=daily; r.fixed=true; r.blank=true; r.state="blank";
     }else if(when==="past"||p.out!=null||(when!=="past"&&!any&&daily-pto<=0)){
       const pm=pairsMinutes([p.in,p.lout,p.lin,p.out]);
-      r.worked=pm.tot+bonus; r.fixed=true; r.missing=when==="past"&&pm.odd; r.state=r.missing?"miss":"done";
+      r.worked=pm.tot; r.fixed=true; r.missing=when==="past"&&pm.odd; r.state=r.missing?"miss":"done";
     }else{
       // open day: plan the missing punches
       const pin=p.in??toMin(st.start);
       let lunch=nolunch?0:(p.lout!=null&&p.lin!=null)?p.lin-p.lout:st.lunch;
       r.lunchTaken=nolunch||p.lin!=null; r.lunchStarted=p.lout!=null;
       r.plan={in:pin,lunch,lout:p.lout??null,lin:p.lin??(p.lout!=null?p.lout+lunch:null)};
-      r.plan.out=pin+lunch+Math.max(0,daily-pto-bonus);
-      r.worked=r.plan.out-pin-lunch+bonus; r.fixed=false; r.state=when==="today"?"today":"plan";
+      r.plan.out=pin+lunch+Math.max(0,daily-pto);
+      r.worked=r.plan.out-pin-lunch; r.fixed=false; r.state=when==="today"?"today":"plan";
     }
     r.total=r.worked+pto; r.diff=r.total-daily;
     return r;
@@ -280,14 +284,14 @@ function render(){
       if(k==="lout"&&pl.lout!=null)return"";if(k==="lin"&&pl.lin!=null&&pl.lout!=null)return toTime(pl.lin);return""};
     const off=k=>r.nolunch&&(k==="lout"||k==="lin");
     const field=(k,lab)=>{const p=ph(k);return `<div class="f"><label for="${k}-${r.date}">${lab}</label><input type="time" id="${k}-${r.date}" data-d="${r.date}" data-k="${k}" value="${v(k)||p}" class="${p&&!v(k)?"planned":""}"${off(k)?" disabled":""}></div>`};
-    const lunchTxt=r.nolunch?`none, +${r.bonus} min`:r.p.lout!=null&&r.p.lin!=null?r.p.lin-r.p.lout+" min":"—";
+    const lunchTxt=r.nolunch?`none`:r.p.lout!=null&&r.p.lin!=null?r.p.lin-r.p.lout+" min":"—";
     const stLab={done:"Done",miss:"Missing punch",today:"Today",plan:"Planned",blank:"Not entered"}[r.state];
     const foot=r.blank?`<span>No punches entered, counted as even</span>`:r.fixed
       ?`<span>Worked <b>${fmtHM(r.worked)}</b>${r.pto?` + PTO <b>${fmtHM(r.pto)}</b>`:""}</span><span>Lunch <b>${lunchTxt}</b></span>`
-      :`<span class="planline">Plan: ${r.nolunch?`no lunch (+${r.bonus} min), `:pl.lout==null?`${pl.lunch}-min lunch, `:pl.lin!=null&&!r.lunchTaken?`back by ${fmt12(pl.lin)}, `:""}out ${fmt12(pl.out)}</span><span>Worked <b>${fmtHM(r.worked)}</b>${r.pto?` + PTO <b>${fmtHM(r.pto)}</b>`:""}</span>`;
+      :`<span class="planline">Plan: ${r.nolunch?`no lunch, `:pl.lout==null?`${pl.lunch}-min lunch, `:pl.lin!=null&&!r.lunchTaken?`back by ${fmt12(pl.lin)}, `:""}out ${fmt12(pl.out)}</span><span>Worked <b>${fmtHM(r.worked)}</b>${r.pto?` + PTO <b>${fmtHM(r.pto)}</b>`:""}</span>`;
     return `<article class="day ${r.when==="today"?"today":""}">
       <div class="dhead"><div class="dname">${FULL[d.getDay()]}<span>${mdy(r.date)}</span></div>
-        <div class="chips"><label class="nl" title="Adds your usual ${S.settings.lunch}-min lunch to the hours worked"><input type="checkbox" data-d="${r.date}" data-k="nolunch"${r.nolunch?" checked":""}>No lunch</label><span class="chip state ${r.state==="plan"||r.state==="today"||r.state==="blank"?"plan":r.state==="miss"?"miss":""}">${stLab}</span>
+        <div class="chips"><label class="nl" title="Ignore lunch punches and count straight from clock-in to clock-out"><input type="checkbox" data-d="${r.date}" data-k="nolunch"${r.nolunch?" checked":""}>No lunch</label><span class="chip state ${r.state==="plan"||r.state==="today"||r.state==="blank"?"plan":r.state==="miss"?"miss":""}">${stLab}</span>
         <span class="chip ${cls(r.diff)} ${cls(r.diff)}" title="Minutes vs. daily target">${signed(r.diff)}</span></div></div>
       <div class="punches">${field("in","In")}${field("lout","Lunch")}${field("lin","Back")}${field("out","Out")}
         <div class="f"><label for="pto-${r.date}">PTO h</label><input type="number" step="0.25" min="0" id="pto-${r.date}" data-d="${r.date}" data-k="pto" value="${r.pto?+(r.pto/60).toFixed(2):""}" placeholder="0"></div></div>
@@ -349,7 +353,9 @@ function parsePaycom(text){
     const y=h.mo<sM?eY:sY, date=`${y}-${pad(h.mo)}-${pad(h.da)}`;
     const times=(chunk.match(/\d{1,2}:\d{2}\s*[AP]M|\?\?/gi)||[]).map(to24);
     let pto=0;const lr=/\[[A-Z]+\][^\[\d]*?(\d+\.\d{2})/g;let q;while((q=lr.exec(chunk)))pto+=Math.round(parseFloat(q[1])*60);
-    days.push({date,in:times[0]??null,lout:times[1]??null,lin:times[2]??null,out:times[3]??null,pto});
+    // Two punches on a finished day means no lunch: they are clock-in and clock-out, not clock-in and lunch
+    if(times.length===2&&date<TODAY)days.push({date,in:times[0],lout:null,lin:null,out:times[1],pto,nolunch:true});
+    else days.push({date,in:times[0]??null,lout:times[1]??null,lin:times[2]??null,out:times[3]??null,pto});
   });
   return days;
 }
@@ -363,7 +369,7 @@ $("pdfIn").addEventListener("change",async e=>{
     const days=parsePaycom(text).filter(d=>{const g=parseISO(d.date).getDay();return g>0&&g<6});
     if(!days.length)throw new Error("Couldn't find any timesheet rows in that PDF. It should be a Paycom Web Time Sheet export.");
     days.forEach(d=>{const ws=weekStart(d.date);const W=S.weeks[ws]||(S.weeks[ws]={target:2400,adjust:null,method:"out",days:{}});
-      W.days[d.date]={in:d.in,lout:d.lout,lin:d.lin,out:d.out,pto:d.pto,nolunch:!!(W.days[d.date]&&W.days[d.date].nolunch)}});
+      W.days[d.date]={in:d.in,lout:d.lout,lin:d.lin,out:d.out,pto:d.pto,nolunch:!!(d.nolunch||W.days[d.date]&&W.days[d.date].nolunch)}});
     S.active=null;render();
     toast(`Loaded ${days.length} weekdays, ${mdy(days[0].date)} to ${mdy(days[days.length-1].date)}.`);
   }catch(err){toast(err.message||"That PDF couldn't be read.",true)}

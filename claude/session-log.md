@@ -4,7 +4,6 @@ One row per session, newest at the bottom. Open reminders at the top; drop them 
 
 ## Open reminders
 - 0.3.0 not installed on a phone yet; 0.2.0 No lunch not tried in a browser yet: check a done day, a planned day and the clock-out advice with it ticked.
-- No lunch adds the Planning defaults lunch length (30 min), not a fixed 30; changing that default changes past days too.
 
 ## Sessions
 | # | Date | Version | Done | Next |
@@ -12,3 +11,4 @@ One row per session, newest at the bottom. Open reminders at the top; drop them 
 | 1 | 2026-11-24 | 0.1.0 | Moved from the claude.ai artifact into the cloned (empty) repo. Title moved into `<head>`, artifact-only meta removed, version shown in the header, the owner's real October punches removed from `SEED` (public repo). Added `CLAUDE.md`, `README.md`, this log and copies of `versioning.md` and `readme-format.md`. | Owner checks the page, then commits and pushes. |
 | 2 | 2026-11-24 | 0.2.0 | No lunch checkbox per day: Lunch and Back fields are disabled and ignored, and the usual lunch length is added to the day's hours (open days plan an earlier clock-out). Kept through a Paycom PDF load. First commit and push. | Owner tries No lunch on real days. |
 | 3 | 2026-11-24 | 0.3.0 | Installable on phones: `manifest.webmanifest` (home-screen name Timecard), clock-on-teal icons (192, 512, apple 180), `sw.js` (page network-first, icons, fonts and pdf.js cached on first use). README Install now covers the github.io address and Add to Home screen. | Owner installs on the phone and checks offline opening. |
+| 4 | 2026-11-25 | 0.3.1 | No lunch reworked: no longer adds the usual lunch length; it grays out Lunch and Back and counts In to Out. A clock-out stored in the Lunch or Back field (2-punch day) moves to Out when No lunch is on. Paycom PDF load: a finished day with only two punches now loads as In and Out with No lunch ticked (before, the clock-out landed in Lunch). | Owner checks real weeks and reports any other wrong numbers with an example day. |

@@ -22,7 +22,7 @@ nothing is shared between your phone and computer.
 
 The top card shows minutes banked so far, the yellow card says what to do on the open day, and below that is one row
 per workday. Enter In, Lunch, Back and Out times and any PTO hours; dashed fields are planned, not punched. Tick **No lunch** on a
-day you worked through lunch: its lunch fields are ignored and your usual lunch length is added to that day's hours. Use the
+day you took no lunch: its lunch fields are grayed out and the day counts straight from In to Out. A Paycom day with only two punches is loaded that way automatically. Use the
 week tabs to switch weeks, and **Planning defaults** to set your usual start, lunch length and number of workdays.
 **Load Paycom PDF** fills the punches from a Paycom Web Time Sheet export. Everything saves as you type.
 

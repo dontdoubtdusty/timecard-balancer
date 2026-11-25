@@ -2,7 +2,7 @@
 // Punches are NOT stored here; they live in the browser's localStorage. This file only keeps
 // a copy of the app itself so it opens without a connection.
 // When you change any file below, bump VERSION so phones pick up the new copy.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'timecard-balancer-' + VERSION;
 const APP_FILES = [
   './',
