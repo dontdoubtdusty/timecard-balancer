@@ -20,16 +20,24 @@ nothing is shared between your phone and computer.
 
 ## Usage
 
-The top card shows minutes banked so far, the yellow card says what to do on the open day, and below that is one row
-per workday. Enter In, Lunch, Back and Out times and any PTO hours; dashed fields are planned, not punched. Tick **No lunch** on a
-day you took no lunch: its lunch fields are grayed out and the day counts straight from In to Out. A Paycom day with only two punches is loaded that way automatically. Use the
-week tabs to switch weeks, and **Planning defaults** to set your usual start, lunch length and number of workdays.
-**Load Paycom PDF** fills the punches from a Paycom Web Time Sheet export. Everything saves as you type.
+The top card shows minutes banked so far and how many hours the week has credited, split into worked, PTO and holiday.
+Type the week's PTO hours there. The yellow card says what to do on the open day, and below that is one row per workday.
+Enter In, Lunch, Back and Out times; dashed fields are planned, not punched. Tick **No lunch** on a day you took no
+lunch: its lunch fields are grayed out and the day counts straight from In to Out. Tap **Holiday** on a paid holiday:
+the day counts as a full day's share of the target and needs no punches. Use the week tabs to switch weeks, and
+**Planning defaults** to set your usual start, lunch length and number of workdays. Everything saves as you type.
+
+**Load Paycom PDF** fills the punches from a Paycom Web Time Sheet export. It also marks holidays (`[HLY]`), loads
+each week's PTO, and ticks No lunch on days with only two punches.
 
 ## Known limits
 
 - Data lives in one browser on one device, with no sync or backup. Another device or browser starts empty.
-- Load Paycom PDF needs internet the first time (it fetches a 1 MB PDF reader, then keeps it), and only reads Paycom
-  Web Time Sheet exports.
-- Up to four punches a day (in, lunch out, lunch in, out), Monday to Friday only.
-- Days in the past with no punches count as even, on purpose, so a missing day does not skew the plan.
+- Works fully offline once installed; nothing is fetched from the internet. Load Paycom PDF only reads Paycom Web Time
+  Sheet exports.
+- PTO is one total per week, not per day. Paycom lists PTO only in the pay-period summary, so the app works out each
+  week's share from Paycom's weekly totals.
+- Up to four punches a day (in, lunch out, lunch in, out), Monday to Friday only. Holidays are all-day; you can't
+  punch on one.
+- Days in the past with no punches count as even, on purpose, so a missing day does not skew the plan. If the week
+  has PTO, those days are assumed to be the PTO days and use it up first.

@@ -12,14 +12,24 @@ Time Sheet PDF. First built as a claude.ai artifact (https://claude.ai/artifact/
 Live at https://dontdoubtdusty.github.io/timecard-balancer/ (GitHub Pages from `main`, root), installable as a PWA
 (progressive web app: a web page the phone installs like an app) via `manifest.webmanifest` and `sw.js`, same pattern as
 the Big apps. Locally, open `index.html` in a browser (the service worker only registers over https). No build step, no
-packages. Data is saved in the browser's localStorage under the key `timecard-balancer-v1`, per device and browser.
+packages. Data is saved in the browser's localStorage under the key `timecard-balancer-v2`, per device and browser
+(v1 data is migrated on first load: per-day PTO summed into the week's `pto`).
 
-When any file listed in `sw.js` changes, bump `VERSION` in `sw.js` too, or installed copies keep serving old icons.
+When any file listed in `sw.js` changes, bump `VERSION` in `sw.js` too, or installed copies keep serving old files.
+The service worker precaches everything, so the installed app never needs the network.
 
 ## Version
 `<span class="ver">` in the `h1` of `index.html`. Rules in `claude/versioning.md`.
 
 ## Project rules
-- Public repo: never commit real punch times, PTO or Paycom exports (no sample data in `SEED`, no PDFs in the repo).
-- Internet is used only for Google Fonts and the pdf.js script (cdnjs) behind Load Paycom PDF; keep it that way.
+- Public repo: never commit real punch times, PTO or Paycom exports (no sample data in `SEED`). The only PDF allowed is
+  the fictional `samples/sample-timesheet.pdf`.
+- Test PDF import against `samples/sample-timesheet.pdf` (made up, same layout and text order as a Paycom Web Time
+  Sheet; regenerate from `samples/sample-timesheet.html`, command in its top comment). Expected: week of 11/22 gets
+  10.50 h PTO (summary 4.20 + 6.30), Thu 11/26 is a holiday ($150.00 is not hours), Tue 11/24 loads In 08:00 / Out
+  13:30 with No lunch, Mon and Fri load four punches.
+- Fully offline: no internet requests at all. Fonts live in `fonts/` (OFL), pdf.js 3.11.174 in `vendor/pdfjs/`
+  (Apache-2.0); add any new asset to the repo and to `APP_FILES` in `sw.js`, never a CDN link.
+- Paycom PTO is a week lump (`week.pto`): the PDF lists it only in the pay-period summary, so `parsePaycom` places it
+  by weekly total minus punched hours. Holidays (`day.holiday`) credit one day's share and ignore punches.
 - If the localStorage data shape changes, bump the key (`-v2`) and migrate the old data rather than dropping it.
